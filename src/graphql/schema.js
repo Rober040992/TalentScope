@@ -12,7 +12,12 @@ export const typeDefs = gql`
     created_at: String
   }
 
+  type JobsResponse {
+    total: Int
+    results: [Job]
+  }
+
   type Query {
-    jobs: [Job]
+    jobs(page: Int = 1, limit: Int = 10): JobsResponse
   }
 `;

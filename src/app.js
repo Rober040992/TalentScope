@@ -4,6 +4,8 @@ import { resolvers } from "./graphql/resolvers.js";
 import { connectDB } from "./config/mongooseConfig.js";
 import { fetchAndStoreJobs } from "./services/arbeitnowService.js";
 
+
+// conectamos a mongo, obtenemos datos de Arbeitnow crea servidor Graphql con apollo (typeDefs y resolvers) y arranca el localhost
 export async function startServer() {
   await connectDB();
   await fetchAndStoreJobs();

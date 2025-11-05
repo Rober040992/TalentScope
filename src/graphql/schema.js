@@ -1,5 +1,6 @@
 import { gql } from "apollo-server";
-
+ 
+//define los tipos y las queries (typeDefs)
 export const typeDefs = gql`
   type Job {
     id: ID!

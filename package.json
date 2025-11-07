@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
-    "update:jobs": "node src/scripts/updateJobs.js"
+    "ingest:once": "node src/ingestion/index.js"
   },
   "dependencies": {
     "apollo-server": "^3.13.0",

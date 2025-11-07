@@ -15,5 +15,4 @@ async function runIngestion() {
   }
 }
 
-// Lanzamos la ingesta
 runIngestion();

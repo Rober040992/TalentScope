@@ -18,10 +18,17 @@ export async function fetchAndStoreJobs() {
       created_at: new Date(job.created_at),
     }));
 
-    await Job.insertMany(jobs, { ordered: false }).catch(() => {});
-    console.log(`✅ ${jobs.length} empleos guardados/actualizados`);
-
+    try {
+      await Job.insertMany(jobs, { ordered: false });
+    } catch (error) {
+      // evita que se muestre el error cuando ocurre un duplicado
+      if (error.code === 11000) {
+        console.log("🔁 Jobs duplicados ignorados");
+      } else {
+        console.error("❌ Error insertando jobs:", error);
+      }
+    }
   } catch (error) {
-        console.log(`ERROR obteniendo datos de los empleos`, error);
+    console.log(`ERROR obteniendo datos de los empleos`, error);
   }
 }

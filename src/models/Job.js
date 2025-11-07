@@ -9,4 +9,7 @@ const jobSchema = new mongoose.Schema({
   created_at: Date,
 });
 
+// indice único por url , Dedupicado por url
+jobSchema.index({ url: 1 }, { unique: true });
+
 export const Job = mongoose.model("Job", jobSchema);

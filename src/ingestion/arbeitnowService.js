@@ -18,17 +18,33 @@ export async function fetchAndStoreJobs() {
       created_at: new Date(job.created_at),
     }));
 
-    try {
-      await Job.insertMany(jobs, { ordered: false });
-    } catch (error) {
-      // evita que se muestre el error cuando ocurre un duplicado
-      if (error.code === 11000) {
-        console.log("🔁 Jobs duplicados ignorados");
-      } else {
-        console.error("❌ Error insertando jobs:", error);
-      }
-    }
+    // deduplicacion y actualizacion
+    const ops = jobs.map((j) => ({
+      updateOne: {
+        filter: {
+          title: j.title,
+          company_name: j.company_name,
+          location: j.location,
+        },
+        update: {
+          $setOnInsert: {
+            title: j.title,
+            company_name: j.company_name,
+            location: j.location,
+          },
+          $set: {
+            url: j.url,
+            tags: j.tags,
+            created_at: j.created_at,
+          },
+        },
+        upsert: true,
+      },
+    }));
+
+    await Job.bulkWrite(ops, { ordered: false });
+    console.log(`✅ Procesadas (upsert) ${ops.length} ofertas`);
   } catch (error) {
-    console.log(`ERROR obteniendo datos de los empleos`, error);
+    console.error("❌ Error durante la ingesta:", error);
   }
 }

@@ -1,12 +1,13 @@
 import fetch from "node-fetch";
 import { Job } from "../models/Job.js";
 import dotenv from "dotenv";
+import { logger } from "../logger/logger.js";
 
 dotenv.config();
 
 export async function fetchAndStoreJobs() {
   try {
-    console.log("⏳ Obteniendo datos desde Arbeitnow...");
+     logger.info("Obteniendo datos desde Arbeitnow...");
 
     // 1. Bloque de FETCH
     let data;
@@ -22,7 +23,7 @@ export async function fetchAndStoreJobs() {
         throw new Error("La respuesta de la API no contiene el array 'data'");
       }
     } catch (error) {
-      console.error("⚠️ Error obteniendo datos de Arbeitnow:", error.message);
+      logger.error(`Error obteniendo datos de Arbeitnow: ${error.message}`);
       return { success: false, error: `Fetch error: ${error.message}` };
     }
 
@@ -62,20 +63,19 @@ export async function fetchAndStoreJobs() {
 
     try {
       await Job.bulkWrite(ops, { ordered: false });
-      console.log(`✅ Procesadas (upsert) ${ops.length} ofertas`);
+      logger.info(`Procesadas (upsert) ${ops.length} ofertas`);
       return { success: true, jobs: ops.length };
     } catch (error) {
       if (error.code === 11000) {
-        console.warn("⚠️ Algunos empleos ya existían (duplicados ignorados)");
+        logger.warn("Algunos empleos ya existían (duplicados ignorados)");
       } else {
-        console.error("❌ Error insertando en MongoDB:", error.message);
+        logger.error(`Error insertando en MongoDB: ${error.message}`);
         return { success: false, error: `MongoDB error: ${error.message}` };
       }
     }
-
   } catch (error) {
     // 4. Catch global para errores inesperados
-    console.error("❌ Error inesperado en fetchAndStoreJobs:", error.message);
+    logger.error(`Error inesperado en fetchAndStoreJobs: ${error.message}`);
     return { success: false, error: `Unexpected error: ${error.message}` };
   }
 }

@@ -1,10 +1,11 @@
 import { Job } from "../models/Job.js";
+import { logger } from "../logger/logger.js";
 
 // define la lógica de cada query
 export const resolvers = {
   Query: {
     jobs: async (_parent, { page = 1, limit = 10 }) => {
-      console.log("📥 Query jobs ejecutada:", "página", page, ", ofertas mostradas", limit)
+      logger.info(`📥 Query jobs ejecutada: página ${page}, ofertas mostradas ${limit}`);
       const p = Math.max(1, Number(page) || 1)
       const l = Math.min(100, Math.max(1, Number(limit) || 10))
       const skip = (p - 1) * l

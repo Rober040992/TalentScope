@@ -1,5 +1,4 @@
-import { Job } from "../models/Job.js";
-import { logger } from "../logger/logger.js";
+import { Job, logger } from "@talentscope/shared";
 
 // define la lógica de cada query
 export const resolvers = {

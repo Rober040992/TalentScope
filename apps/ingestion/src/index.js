@@ -1,6 +1,5 @@
-import { connectDB } from "../config/mongooseConfig.js";
 import { fetchAndStoreJobs } from "./arbeitnowService.js";
-import { logger } from "../logger/logger.js";
+import { connectDB, logger } from "@talentscope/shared";
 
 async function runIngestion() {
   try {

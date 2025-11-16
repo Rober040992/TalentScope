@@ -1,19 +1,14 @@
 {
-  "name": "talentscope",
+  "name": "talentscope-monorepo",
+  "private": true,
   "version": "1.0.0",
-  "type": "module",
-  "main": "src/index.js",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "node --watch src/index.js",
-    "ingest:once": "node src/ingestion/index.js"
-  },
-  "dependencies": {
-    "apollo-server": "^3.13.0",
-    "dotenv": "^16.4.5",
-    "graphql": "^16.9.0",
-    "mongoose": "^8.0.0",
-    "node-fetch": "^3.3.2",
-    "winston": "^3.18.3"
+    "api:start": "npm --workspace apps/api start",
+    "api:dev": "npm --workspace apps/api run dev",
+    "ingestion:start": "npm --workspace apps/ingestion start"
   }
 }

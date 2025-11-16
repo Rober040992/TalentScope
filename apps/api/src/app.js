@@ -1,8 +1,7 @@
 import { ApolloServer } from "apollo-server";
 import { typeDefs } from "./graphql/schema.js";
 import { resolvers } from "./graphql/resolvers.js";
-import { connectDB } from "./config/mongooseConfig.js";
-import { logger } from "./logger/logger.js";
+import { connectDB, logger } from "@talentscope/shared";
 
 // conectamos a mongo, obtenemos datos de Arbeitnow crea servidor Graphql con apollo (typeDefs y resolvers) y arranca el localhost
 export async function startServer() {

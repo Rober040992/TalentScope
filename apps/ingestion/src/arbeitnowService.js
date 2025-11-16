@@ -1,7 +1,6 @@
 import fetch from "node-fetch";
-import { Job } from "../models/Job.js";
 import dotenv from "dotenv";
-import { logger } from "../logger/logger.js";
+import { Job, logger } from "@talentscope/shared";
 
 dotenv.config();
 

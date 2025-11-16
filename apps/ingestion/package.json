@@ -1,11 +1,10 @@
 {
   "name": "talentscope-ingestion-microservice",
   "version": "1.0.0",
-  "description": "Microservicio de ingesta de ofertas de empleo para TalentScope",
-  "main": "index.js",
   "type": "module",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node src/index.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",

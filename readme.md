@@ -1,0 +1,231 @@
+# TalentScope – Distributed Job Tracking Platform (Monorepo)
+
+---
+
+### 🧩 Visión de Arquitectura
+
+TalentScope está construido como un **monorepo modular distribuido**, basado en **Microservicios + Shared Package**.  
+Los servicios están completamente desacoplados y se comunican únicamente a través de una base de datos común. No existe coupling entre API y pipeline de ingesta.
+```
+            +-----------------------+
+            |   Arbeitnow API       |
+            +-----------+-----------+
+                        |
+                        v
+            +-----------------------+
+            | Ingestion Microservice |
+            |  • fetch + normalize   |
+            |  • bulkWrite upsert    |
+            |  • dedupe vía índices  |
+            +-----------+------------+
+                        |
+                        v
+                MongoDB (Shared)
+                        ^
+                        |
+            +-----------+------------+
+            |     GraphQL API        |
+            |  • paginación nativa   |
+            |  • modelo shared       |
+            |  • clean resolvers     |
+            +------------------------+
+```
+
+### 🧠 Principios aplicados
+
+- **SOLID en todas las capas**
+- **Separation of Concerns** estricta  
+  - API solo lee  
+  - Ingestion solo escribe  
+  - Shared solo abstrae infraestructura
+- **Idempotencia del pipeline**  
+  - Garantizada mediante `bulkWrite` + índices únicos
+- **Determinismo en la ingesta**
+  - Ninguna operación depende del orden
+- **Escalabilidad horizontal**
+  - Ingestion puede desplegarse como worker aislado
+  - API puede replicarse con cualquier load balancer
+- **Observabilidad integrada**
+  - Log format uniforme (Winston)
+  - Salida dual: consola + archivo
+
+### 🔧 Detalles relevantes para Code Review avanzado
+
+- El ingest worker implementa:
+  - Fase de fetch con validación estricta de payload  
+  - Fase de mapping controlada  
+  - Fase de upsert multi–campo con separación clara entre datos de creación y actualización  
+  - Manejo de duplicados sin ruido operativo (códigos 11000)
+
+- El API implementa:
+  - Normalización de parámetros (`page`, `limit`)
+  - Paginación real (prev/next)
+  - Búsqueda ordenada por `created_at`
+  - Funciones puras en resolvers
+
+- El Shared Package contiene únicamente:
+  - Conexión a MongoDB  
+  - Modelo Job con índices  
+  - Logger uniforme y listo para distribuirse entre servicios
+
+### 🧬 Preparado para escalar
+
+- Trabajo orientado a contenedores (estructura compatible con Docker)
+- Monorepo listo para CI/CD (pipelines por workspace)
+- División clara entre runtime del worker y runtime de la API
+- Fácil transición a colas (BullMQ / RabbitMQ), Kafka o cron jobs distribuidos
+
+---
+
+## 📖 TalentScope – Job Tracker (Monorepo)
+
+TalentScope es una plataforma backend diseñada para importar, normalizar y exponer ofertas de empleo mediante una arquitectura modular basada en microservicios.  
+Construido como un **monorepo profesional**, el proyecto demuestra dominio en **GraphQL**, **Node.js moderno**, **MongoDB**, **data ingestion pipelines**, **logging avanzado** y **principios SOLID** aplicados a un entorno real.
+
+El ecosistema está formado por tres unidades:
+
+- **API GraphQL**: exposición de datos con paginación nativa.
+- **Ingestion Microservice**: proceso autónomo encargado de obtener datos desde la API pública de Arbeitnow y almacenarlos en MongoDB.
+- **Shared Package**: capa común para modelos, conexión a BD y sistema de logs unificado.
+
+Este enfoque permite escalabilidad, separación de responsabilidades y preparación para desplegar en entornos distribuidos.
+
+---
+
+## 🧠 Tech Stack
+
+- **Node.js 22.x (ESM)**
+- **GraphQL (Apollo Server 3)**
+- **MongoDB + Mongoose**
+- **Node Fetch**
+- **Winston Logger**
+- **Monorepo con NPM Workspaces**
+- **Variables de entorno por microservicio**
+
+---
+
+## 🧩 Arquitectura del Monorepo
+```
+TALENTSCOPE/
+│
+├── apps/
+│   ├── api/           # Servidor GraphQL
+│   └── ingestion/     # Ingestión de ofertas
+│
+└── packages/
+    └── shared/        # Código común: DB, Logger, Modelos
+```
+
+---
+
+## ⭐ Características Principales
+
+- Pipeline de ingesta desacoplado  
+- API GraphQL con paginación real  
+- Logging profesional  
+- Monorepo escalable con arquitectura limpia  
+- Deduplicación automática mediante índices únicos  
+- Upsert masivo con `bulkWrite`  
+- Control de errores robusto
+
+---
+
+## 🛠 Instalación y Configuración
+
+### 1. Clonar el repositorio
+```bash
+git clone <repo>
+cd talentscope
+npm install
+```
+
+### 🔐 Variables de Entorno
+
+El proyecto utiliza tres archivos `.env`:
+
+#### 1. `.env` en la raíz
+```ini
+MONGO_URI="mongodb://localhost:27017/talentscope"
+API_URL="https://arbeitnow.com/api/job-board-api"
+PORT=4000
+```
+
+#### 2. `.env` en `/apps/api`
+```ini
+MONGO_URI="mongodb://localhost:27017/talentscope"
+PORT=4000
+```
+
+#### 3. `.env` en `/apps/ingestion`
+```ini
+MONGO_URI="mongodb://localhost:27017/talentscope"
+API_URL="https://arbeitnow.com/api/job-board-api"
+```
+
+---
+
+## 🚀 Scripts del Monorepo
+```json
+"api:start": "npm --workspace apps/api start",
+"api:dev": "npm --workspace apps/api run dev",
+"ingestion:start": "npm --workspace apps/ingestion start"
+```
+
+### ▶️ Ejecución
+
+#### Iniciar la API
+```bash
+npm run api:start
+```
+
+#### Modo desarrollo
+```bash
+npm run api:dev
+```
+
+#### Ejecutar ingesta
+```bash
+npm run ingestion:start
+```
+
+---
+
+## 📘 Query GraphQL
+```graphql
+query {
+  jobs(page: 1, limit: 10) {
+    total
+    results {
+      title
+      company_name
+      location
+      url
+      tags
+      created_at
+    }
+    page
+    limit
+    hasPrevPage
+    hasNextPage
+  }
+}
+```
+
+---
+
+## 🎯 Objetivo del Proyecto
+
+TalentScope demuestra:
+
+- Arquitectura modular y desacoplada
+- Microservicios con responsabilidades aisladas
+- Ingesta robusta y tolerante a fallos
+- Paginación real
+- Logging estructurado
+- Diseño preparado para cloud y escalado horizontal
+
+---
+
+## 📄 License
+
+MIT License © 2025 Roberto

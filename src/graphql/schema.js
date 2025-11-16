@@ -15,6 +15,10 @@ export const typeDefs = gql`
   type JobsResponse {
     total: Int
     results: [Job]
+    page: Int
+    limit: Int
+    hasPrevPage: Boolean
+    hasNextPage: Boolean
   }
 
   type Query {

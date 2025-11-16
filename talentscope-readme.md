@@ -16,6 +16,7 @@ Built with a **modular architecture** and following **SOLID principles**, this p
 - **MongoDB**
 - **Fetch API**
 - **Environment variables** (.env)
+- **Winston logger**
 - **Jest** para testing
 
 ## ⚙️ Features
@@ -54,8 +55,8 @@ MONGODB_URI="mongodb://yourlocalhostHere/talentscope"
 ```json
 "scripts": {
   "start": "node src/index.js",
-  "dev": "nodemon src/index.js",
-  "update:jobs": "node src/scripts/updateJobs.js"
+  "dev": "node --watch src/index.js",
+  "ingest:once": "node src/ingestion/index.js"
 }
 ```
 

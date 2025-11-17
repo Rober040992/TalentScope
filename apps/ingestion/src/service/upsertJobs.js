@@ -31,13 +31,20 @@ export async function upsertJobs(mappedJobs, page) {
   }));
 
   try {
-    await Job.bulkWrite(ops, { ordered: false });
-    logger.info(`Procesadas (upsert) ${ops.length} ofertas en página ${page}`);
-    return ops.length;
+    const result = await Job.bulkWrite(ops, { ordered: false });
+
+    const inserted = result.upsertedCount || 0;
+    const updated = result.modifiedCount || 0;
+    const matched = result.matchedCount || 0;
+
+    logger.info(
+      `Página ${page}: insertados ${inserted}, actualizados ${updated}, existentes ${matched}`
+    );
+    return { inserted, updated, matched, total: ops.length };
   } catch (error) {
     if (error.code === 11000) {
       logger.warn("Algunos empleos ya existían (duplicados ignorados)");
-      return ops.length;
+      return { inserted: 0, updated: 0, matched: 0, total: ops.length };
     } else {
       logger.error(`Error insertando en MongoDB: ${error.message}`);
       throw error;

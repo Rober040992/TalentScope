@@ -1,4 +1,4 @@
-import { fetchAndStoreJobs } from "./arbeitnowService.js";
+import { fetchAndStoreJobs } from "./service/arbeitnowService.js";
 import { connectDB, logger } from "@talentscope/shared";
 
 async function runIngestion() {

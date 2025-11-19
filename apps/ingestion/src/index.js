@@ -1,5 +1,6 @@
 import { fetchAndStoreJobs } from "./service/arbeitnowService.js";
 import { connectDB, logger } from "@talentscope/shared";
+import "./cron.js";
 
 async function runIngestion() {
   try {

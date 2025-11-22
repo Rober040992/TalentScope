@@ -9,6 +9,15 @@
   "scripts": {
     "start": "npm --workspace apps/api start",
     "dev": "npm --workspace apps/api run dev",
-    "ingestion:start": "npm --workspace apps/ingestion start"
+    "ingestion:start": "npm --workspace apps/ingestion start",
+
+    "docker:dev": "docker compose -f docker-compose.dev.yml up --build",
+    "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
+    "docker:prod": "docker compose -f docker-compose.prod.yml up --build -d",
+    "docker:prod:down": "docker compose -f docker-compose.prod.yml down",
+    
+    "docker:restart:all": "docker compose -f docker-compose.dev.yml down && docker compose -f docker-compose.dev.yml up --build",
+    "docker:api:restart": "docker compose -f docker-compose.dev.yml restart api",
+    "docker:ingestion:restart": "docker compose -f docker-compose.dev.yml restart ingestion"
   }
 }

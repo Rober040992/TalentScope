@@ -11,10 +11,33 @@ export async function startServer() {
     logger.error(`Error connecting to DB: ${error.message}`);
   }
 
-  const server = new ApolloServer({ typeDefs, resolvers });
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    introspection: true,
+    csrfPrevention: false
+  });
   try {
-    const { url } = await server.listen({ port: process.env.PORT || 4000 });
-    logger.info(`👌 TalentScope GraphQL API running at ${url}`);
+    const port = process.env.PORT || 4565;
+
+    server
+      .listen({ port })
+      .then(({ url }) => {
+        logger.info(`👌 TalentScope GraphQL API running at ${url}`);
+      })
+      .catch(async (error) => {
+        if (error.code === "EADDRINUSE") {
+          const fallback = port + 1;
+          logger.warn(`⚠️ Puerto ${port} en uso. Probando ${fallback}...`);
+          
+          const { url } = await server.listen({ port: fallback });
+          logger.info(`👌 API arrancada en puerto alternativo: ${url}`);
+        
+        } else {
+          logger.error(`Error starting server: ${error.message}`);
+        }
+      });
+
   } catch (error) {
     logger.error(`Error starting server: ${error.message}`);
   }

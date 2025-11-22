@@ -1,0 +1,57 @@
+# Ignorar dependencias locales
+node_modules/
+**/node_modules/
+
+# Ignorar logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignorar entorno
+.env
+**/.env
+
+# Ignorar archivos de desarrollo
+.DS_Store
+*.swp
+
+# Ignorar carpetas de editor
+.vscode/
+.idea/
+
+# Ignorar build outputs
+dist/
+build/
+coverage/
+
+# Ignorar archivos de Docker
+docker-compose.override.yml
+
+# Ignorar archivos temporales del sistema
+.tmp/
+temp/
+*.tmp
+
+# Ignorar archivos de Git
+.git/
+.gitignore
+
+# Ignorar imágenes y assets innecesarios
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+
+# Ignorar archivos de OS
+Thumbs.db
+
+# Evitar incluir contenedores o dumps
+*.tar
+*.zip
+*.gz
+
+# Evitar incluir scripts locales
+scripts-local/

@@ -2,7 +2,7 @@
 // Ejecuta la ingesta semanal
 
 import cron from "node-cron";
-import { fetchAndStoreJobs } from "./service/fetchArbeitnowPage.js";
+import { fetchAndStoreJobs } from "./service/arbeitnowService.js";
 import { logger } from "@talentscope/shared";
 
 cron.schedule("0 3 * * 1", async () => {

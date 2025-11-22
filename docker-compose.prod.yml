@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: talentscope-mongo
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - internal
+    # 👇 En producción NO exponemos Mongo. No hay 'ports:'.
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: talentscope-api
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 4565
+      MONGO_URI: ${MONGO_URI}
+    ports:
+      - "4565:4565"     # Solo exponemos la API
+    depends_on:
+      - mongo
+    networks:
+      - internal
+
+  ingestion:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: talentscope-ingestion
+    restart: always
+    environment:
+      NODE_ENV: production
+      MONGO_URI: ${MONGO_URI}
+      API_URL: https://arbeitnow.com/api/job-board-api
+    depends_on:
+      - mongo
+    networks:
+      - internal
+
+networks:
+  internal:
+
+volumes:
+  mongo_data:

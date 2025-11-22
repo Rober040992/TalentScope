@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: talentscope-mongo
+    ports:
+      - "27017:27017"   # Solo en dev
+    volumes:
+      - mongo_data:/data/db
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: talentscope-api
+    command: ["npm", "--workspace", "apps/api", "run", "dev"]
+    environment:
+      MONGO_URI: mongodb://mongo:27017/talentscope
+      PORT: 4565
+    ports:
+      - "4565:4565"    # API visible en tu máquina
+    depends_on:
+      - mongo
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  ingestion:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: talentscope-ingestion
+    command: ["npm", "--workspace", "apps/ingestion", "start"]
+    environment:
+      MONGO_URI: mongodb://mongo:27017/talentscope
+      API_URL: https://arbeitnow.com/api/job-board-api
+    depends_on:
+      - mongo
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+volumes:
+  mongo_data:

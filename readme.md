@@ -127,6 +127,7 @@ TALENTSCOPE/
 - Deduplicación automática mediante índices únicos  
 - Upsert masivo con `bulkWrite`  
 - Control de errores robusto
+- cron automático semanal con node-cron
 
 ---
 
@@ -171,7 +172,7 @@ API_URL="https://arbeitnow.com/api/job-board-api"
 "ingestion:start": "npm --workspace apps/ingestion start"
 ```
 
-### ▶️ Ejecución
+## ▶️ Ejecución en local sin Docker
 
 #### Iniciar la API
 ```bash
@@ -211,6 +212,88 @@ query {
 }
 ```
 
+## 🐳 Docker Support (Dev y Prod)
+
+TalentScope incluye un entorno Docker completo para ejecutar API, Ingestion y MongoDB sin necesidad de instalar Node ni Mongo en tu máquina.
+Los archivos relevantes son:
+* `Dockerfile` (construye imagen de API o Ingestion)
+* `docker-compose.dev.yml` → entorno local de desarrollo
+* `docker-compose.prod.yml` → entorno de producción
+* `.dockerignore`
+
+📌 Variables de entorno para Docker
+Debes crear un archivo `.env` DENTRO de la raíz del proyecto:
+```
+MONGO_URI=mongodb://mongodb:27017/talentscope
+API_URL=https://arbeitnow.com/api/job-board-api
+PORT=4565
+```
+
+El host de Mongo cambia de `localhost` a `mongodb` porque Docker crea una red interna.
+🛠️ Scripts Docker del Monorepo
+Desde el root package.json ya tienes disponibles:
+▶️ Desarrollo con Docker
+Iniciar todo el entorno:
+```
+npm run docker:dev
+```
+Detenerlo:
+```
+npm run docker:dev:down
+```
+Reiniciar TODO:
+```
+npm run docker:restart:all
+```
+Reiniciar solo API:
+```
+npm run docker:api:restart
+```
+Reiniciar solo Ingestion:
+```
+npm run docker:ingestion:restart
+```
+▶️ Producción con Docker
+Build + ejecutar en modo detach:
+```
+npm run docker:prod
+```
+Detener producción:
+```
+npm run docker:prod:down
+```
+🚀 Cómo usar TalentScope con Docker
+1. Clonar repositorio
+```
+git clone <repo>
+cd talentscope
+```
+2. Crear `.env` en la raíz
+Con esta configuración:
+```
+MONGO_URI=mongodb://mongodb:27017/talentscope
+API_URL=https://arbeitnow.com/api/job-board-api
+PORT=4565
+```
+3. Ejecutar en modo desarrollo
+```
+npm run docker:dev
+```
+Esto levantará:
+* `api` (GraphQL)
+* `ingestion` (microservicio)
+* `mongodb` (base de datos)
+* red interna entre servicios
+4. Acceder a la API
+```
+http://localhost:4565
+```
+5. Forzar una ingesta manual dentro de Docker
+```
+docker compose -f docker-compose.dev.yml exec ingestion node src/index.js
+```
+(esto usa el mismo script `ingestion:start` que fuera de Docker)
+
 ---
 
 ## 🎯 Objetivo del Proyecto
@@ -228,4 +311,4 @@ TalentScope demuestra:
 
 ## 📄 License
 
-MIT License © 2025 Roberto
+MIT License © 2025 Roberto Gómez Fábrega

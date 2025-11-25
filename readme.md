@@ -2,6 +2,11 @@
 
 ---
 
+## TalentScope API (GraphQL)
+
+**URL pública:** https://talentscope-api.onrender.com
+- quiery info mas abajo 👇
+
 ### 🧩 Visión de Arquitectura
 
 TalentScope está construido como un **monorepo modular distribuido**, basado en **Microservicios + Shared Package**.  
@@ -52,6 +57,7 @@ Los servicios están completamente desacoplados y se comunican únicamente a tra
 ### 🔧 Detalles relevantes para Code Review avanzado
 
 - El ingest worker implementa:
+  - ### provisionalmente corriendo en la api, ready para ser desplegado (not free tier)
   - Fase de fetch con validación estricta de payload  
   - Fase de mapping controlada  
   - Fase de upsert multi–campo con separación clara entre datos de creación y actualización  
@@ -129,7 +135,24 @@ TALENTSCOPE/
 - Control de errores robusto
 - cron automático semanal con node-cron
 
+## 🔵 1. TalentScope API (GraphQL)
+
+**URL pública:** https://talentscope-api.onrender.com
+
+Este endpoint expone la API GraphQL con:
+- Consulta de ofertas (`jobs`)
+- Paginación automática
+- Campos normalizados: `title`, `company_name`, `location`, `tags`, `url`, `created_at`
+ 
+
 ---
+
+## ⚙️ Ejecución Automática del Cron (Modo Render Free) 
+
+La ingesta automática funciona mediante un cron interno del microservicio, ejecutado como child process dentro de la API.
+
+Esta solución es __PROVISIONAL__, necesaria por las limitaciones del plan Free de Render (no permite Workers ni CronJobs).
+La arquitectura sigue siendo modular y está preparada para mover la ingesta a un servicio independiente cuando el entorno lo permita.
 
 ## 🛠 Instalación y Configuración
 
